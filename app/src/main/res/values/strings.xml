@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">FirstProject</string>
+    <string name="edit_message">Enter a Ticker Symbol</string>
+    <string name="button_send">Go</string>
+    <string name="price">Price</string>
+    <string name="high">High</string>
+    <string name="low">Low</string>
+
+
+</resources>
