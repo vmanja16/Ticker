@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2016 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.android.networkconnect;
 
 import android.content.Context;
@@ -99,8 +83,8 @@ public class MainActivity extends FragmentActivity implements DownloadCallback {
     public void updateFromDownload(String result) {
         if (result != null) {
             Quote quote = new Quote(result);
-            mDataText.setText(quote.getDataString());
-           // test
+            if (quote.isValid()) mDataText.setText(quote.getDataString());
+            // test
             String text = mEditText.getText().toString();
             mDataText.append(text);
         } else {
@@ -123,7 +107,7 @@ public class MainActivity extends FragmentActivity implements DownloadCallback {
             mNetworkFragment.cancelDownload();
         }
     }
-// TODO: Not even sure we need to do the progress update stuff!
+
     @Override
     public void onProgressUpdate(int progressCode, int percentComplete) {
         switch(progressCode) {
@@ -133,11 +117,12 @@ public class MainActivity extends FragmentActivity implements DownloadCallback {
             case Progress.CONNECT_SUCCESS:
                 break;
             case Progress.GET_INPUT_STREAM_SUCCESS:
-                break;
+                mDataText.setText("Loading " + percentComplete + "%");
             case Progress.PROCESS_INPUT_STREAM_IN_PROGRESS:
-                mDataText.setText("" + percentComplete + "%");
+                mDataText.setText("Loading " + percentComplete + "%");
                 break;
             case Progress.PROCESS_INPUT_STREAM_SUCCESS:
+                mDataText.setText("Finished loading");
                 break;
         }
     }

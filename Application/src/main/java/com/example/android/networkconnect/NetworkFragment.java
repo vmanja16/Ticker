@@ -59,7 +59,9 @@ public class NetworkFragment extends Fragment {
         // setRetainInstance(true) upon creation.
         NetworkFragment networkFragment = (NetworkFragment) fragmentManager
                 .findFragmentByTag(NetworkFragment.TAG);
-        if (networkFragment == null) {
+
+        // get new fragment if one doesnt exist or if the url changed
+        if ((networkFragment == null) || (!networkFragment.mUrlString.equals(url)) ){
             networkFragment = new NetworkFragment();
             Bundle args = new Bundle();
             args.putString(URL_KEY, url);
@@ -239,13 +241,11 @@ public class NetworkFragment extends Fragment {
                 }
                 // Retrieve the response body as an InputStream.
                 stream = connection.getInputStream();
-                // progress nonsense
+                // publish connection success
                 publishProgress(DownloadCallback.Progress.GET_INPUT_STREAM_SUCCESS, 0);
                 if (stream != null) {
-                    // Converts Stream to String with max length of 500.
-
-                    // TODO: modify readStream to read the entire stream!
-                    result = readStream(stream, 500);
+                    // read the stream
+                    result = readStream(stream);
                     publishProgress(DownloadCallback.Progress.PROCESS_INPUT_STREAM_SUCCESS, 0);
                 }
             } finally {
@@ -263,18 +263,15 @@ public class NetworkFragment extends Fragment {
         /**
          * Converts the contents of an InputStream to a String.
          */
-        private String readStream(InputStream stream, int maxLength) throws IOException {
+        private String readStream(InputStream stream) throws IOException {
             String result = null;
             // Read InputStream using the UTF-8 charset.
             InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
 
-            // Create temporary buffer to hold Stream data with specified max length.
-            char[] buffer = new char[maxLength];
             // Populate temporary buffer with Stream data.
             int numChars = 0;
             int readSize = 0;
 
-            // TODO: read the entire file into a StringBUilder -> string
             // Created Buffered Reader
             BufferedReader breader = new BufferedReader(reader);
             // unclear what pct does in publishProgress
@@ -292,28 +289,9 @@ public class NetworkFragment extends Fragment {
             }
 
             result = total.toString();
-            return result;
-
-
-            /*
-            while (numChars < maxLength && readSize != -1) {
-                numChars += readSize;
-                int pct = (100 * numChars) / maxLength;
-                publishProgress(DownloadCallback.Progress.PROCESS_INPUT_STREAM_IN_PROGRESS, pct);
-
-                readSize = reader.read(buffer, numChars, buffer.length - numChars);
-            }
-
-            if (numChars != -1) {
-                // The stream was not empty.
-                // Create String that is actual length of response body if actual length was less than
-                // max length.
-                numChars = Math.min(numChars, maxLength);
-                result = new String(buffer, 0, numChars);
-            }
 
             return result;
-            */
+
         }
     }
 }
